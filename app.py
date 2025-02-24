@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 import zipfile
 import io
+import re  # Dosya isimlerini güvenli hale getirmek için
 
 # 🎨 Streamlit Arayüzü Başlat
 st.set_page_config(page_title="Excel Sheet Ayrıştırıcı", page_icon="📂", layout="centered")
@@ -24,7 +25,8 @@ if uploaded_file:
 
     # ZIP Dosyası İçin Bellek Alanı Aç
     zip_buffer = io.BytesIO()
-    
+
+    # ZIP Dosyasını oluştur
     with zipfile.ZipFile(zip_buffer, "w", zipfile.ZIP_DEFLATED) as zip_file:
         for sheet_name in xls.sheet_names:
             df = xls.parse(sheet_name)
@@ -32,15 +34,18 @@ if uploaded_file:
             df.to_excel(output, index=False, engine='openpyxl')
             output.seek(0)
             
+            # Dosya ismini temizleyerek güvenli hale getir
+            safe_sheet_name = re.sub(r'[\\/*?:"<>|]', '', sheet_name)  # Yasaklı karakterleri temizle
+
             # ZIP için dosyayı belleğe kaydet
-            zip_file.writestr(f"{sheet_name}.xlsx", output.getvalue())
+            zip_file.writestr(f"{safe_sheet_name}.xlsx", output.getvalue())
 
             # Tek tek indirme seçeneği varsa indirme butonu göster
             if download_option == "Tek Tek":
                 st.download_button(
-                    label=f"📥 {sheet_name}.xlsx İndir",
+                    label=f"📥 {safe_sheet_name}.xlsx İndir",
                     data=output,
-                    file_name=f"{sheet_name}.xlsx",
+                    file_name=f"{safe_sheet_name}.xlsx",
                     mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
                 )
 
