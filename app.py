@@ -1,15 +1,16 @@
-pip install streamlit pandas openpyxl zipfile36
 import streamlit as st
 import pandas as pd
 import zipfile
 import io
 
 # 🎨 Streamlit Arayüzü Başlat
-st.title("Excel Sheet Ayrıştırıcı 🚀")
-st.write("Yüklediğiniz Excel dosyasının her sayfasını ayrı bir dosya olarak indirebilirsiniz.")
+st.set_page_config(page_title="Excel Sheet Ayrıştırıcı", page_icon="📂", layout="centered")
+
+st.title("📂 Excel Sheet Ayrıştırıcı 🚀")
+st.write("Yüklediğiniz Excel dosyasının her sayfasını ayrı bir dosya olarak kaydedin!")
 
 # 📤 Kullanıcıdan Excel Dosyası Alma
-uploaded_file = st.file_uploader("Excel dosyanızı yükleyin (.xlsx)", type=["xlsx"])
+uploaded_file = st.file_uploader("Lütfen Excel dosyanızı yükleyin (.xlsx)", type=["xlsx"])
 
 if uploaded_file:
     # 📂 Excel Dosyasını Okuma
@@ -37,7 +38,7 @@ if uploaded_file:
             # Tek tek indirme seçeneği varsa indirme butonu göster
             if download_option == "Tek Tek":
                 st.download_button(
-                    label=f"{sheet_name}.xlsx İndir",
+                    label=f"📥 {sheet_name}.xlsx İndir",
                     data=output,
                     file_name=f"{sheet_name}.xlsx",
                     mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
@@ -47,9 +48,8 @@ if uploaded_file:
     if download_option == "ZIP Olarak":
         zip_buffer.seek(0)
         st.download_button(
-            label="Tüm Sheet'leri ZIP Olarak İndir",
+            label="📥 Tüm Sheet'leri ZIP Olarak İndir",
             data=zip_buffer,
             file_name="excel_sheets.zip",
             mime="application/zip"
         )
-streamlit run app.py
